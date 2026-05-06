@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+
 }
 
 android {
@@ -55,11 +56,6 @@ dependencies {
     // Navigation (FIXED)
     implementation(libs.androidx.navigation.compose.v277)
 
-    // Firebase
-    implementation(platform(libs.firebase.bom.v3312))
-    implementation(libs.google.firebase.auth.ktx)
-    implementation(libs.google.firebase.firestore.ktx)
-
     // Google Maps (FIXED)
     implementation(libs.maps.compose.v2114)
     implementation(libs.play.services.maps.v1820)
@@ -79,4 +75,7 @@ dependencies {
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation(libs.postgrest.kt)
+    implementation(libs.auth.kt)
+    implementation(libs.ktor.client.android)
 }

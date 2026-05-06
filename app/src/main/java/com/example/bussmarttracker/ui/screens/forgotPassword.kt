@@ -1,94 +1,51 @@
 package com.example.bussmarttracker.ui.screens
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.*
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.*
-import androidx.compose.ui.unit.*
-import com.example.bussmarttracker.R
-import com.example.bussmarttracker.ui.theme.primaryColor
-import com.example.bussmarttracker.ui.theme.secondaryColor
-import com.airbnb.lottie.compose.*
-import com.google.firebase.auth.FirebaseAuth
-
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 @Composable
-fun ForgotPasswordScreen(modifier: Modifier = Modifier) {
+fun ForgotPasswordScreen(
+    onBack: () -> Unit
+) {
 
-    var emailInput by remember { mutableStateOf(TextFieldValue("")) }
-    val auth = remember { FirebaseAuth.getInstance() }
+    var email by remember { mutableStateOf("") }
+    var message by remember { mutableStateOf("") }
 
     Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center
     ) {
 
-        LottieAnimationWidget(R.raw.bus_login, 300.dp)
-
-        Spacer(modifier = Modifier.height(36.dp))
-
-        Text(
-            text = "Oops! Forgot Password?",
-            style = TextStyle(
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Bold,
-                color = primaryColor
-            )
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        OutlinedTextField(
-            value = emailInput,
-            onValueChange = { emailInput = it },
-            label = { Text("Email Address") },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Filled.Email,
-                    contentDescription = "Email Input",
-                    tint = primaryColor
-                )
-            },
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = secondaryColor,
-                unfocusedBorderColor = primaryColor
-            ),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+        TextField(
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedButton(
+        Button(
             onClick = {
-                auth.sendPasswordResetEmail(emailInput.text)
+                message = "Password reset is handled in Supabase dashboard or custom email flow"
             },
-            colors = ButtonDefaults.outlinedButtonColors(
-                contentColor = Color.White,
-                containerColor = primaryColor
-            ),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text("Get Password Reset")
+            Text("Reset Password")
         }
 
-        Row {
-            TextButton(onClick = { /* navigate back */ }) {
-                Text("Back to login", fontSize = 11.sp)
-            }
-            TextButton(onClick = { /* go to signup */ }) {
-                Text("No account?", fontSize = 11.sp)
-            }
+        Spacer(modifier = Modifier.height(12.dp))
+
+        TextButton(onClick = onBack) {
+            Text("Back")
+        }
+
+        if (message.isNotEmpty()) {
+            Text(text = message)
         }
     }
 }

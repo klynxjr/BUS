@@ -7,16 +7,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.bussmarttracker.R
-import com.google.firebase.auth.FirebaseAuth
 import com.airbnb.lottie.compose.*
+import com.example.bussmarttracker.ui.data.SupabaseClient
+import io.github.jan.supabase.auth.auth
+import io.github.jan.supabase.auth.providers.builtin.Email
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
-    onGoToSignup: () -> Unit
+    onGoToSignup: () -> Unit,
+    onForgotPassword: () -> Unit
 ) {
-
-    val auth = remember { FirebaseAuth.getInstance() }
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -24,7 +26,8 @@ fun LoginScreen(
     var loading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
 
-    // Lottie setup
+    val scope = rememberCoroutineScope()
+
     val composition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(R.raw.bus_login)
     )
@@ -48,7 +51,6 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Lottie Animation
         LottieAnimation(
             composition = composition,
             progress = progress,
@@ -59,7 +61,6 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Email
         TextField(
             value = email,
             onValueChange = { email = it },
@@ -69,7 +70,6 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Password
         TextField(
             value = password,
             onValueChange = { password = it },
@@ -80,7 +80,6 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Error Message
         if (errorMessage.isNotEmpty()) {
             Text(
                 text = errorMessage,
@@ -89,21 +88,26 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(8.dp))
         }
 
-        // Login Button
         Button(
             onClick = {
-                loading = true
-                errorMessage = ""
+                scope.launch {
+                    loading = true
+                    errorMessage = ""
 
-                auth.signInWithEmailAndPassword(email, password)
-                    .addOnSuccessListener {
+                    try {
+                        SupabaseClient.client.auth.signInWith(Email) {
+                            this.email = email
+                            this.password = password
+                        }
+
                         loading = false
                         onLoginSuccess()
-                    }
-                    .addOnFailureListener {
+
+                    } catch (e: Exception) {
                         loading = false
-                        errorMessage = it.message ?: "Login failed"
+                        errorMessage = e.message ?: "Login failed"
                     }
+                }
             },
             modifier = Modifier.fillMaxWidth(),
             enabled = !loading
@@ -113,9 +117,17 @@ fun LoginScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // Navigate to Signup
-        TextButton(onClick = onGoToSignup) {
-            Text("Don't have an account? Sign up")
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            TextButton(onClick = onGoToSignup) {
+                Text("Sign up")
+            }
+
+            TextButton(onClick = onForgotPassword) {
+                Text("Forgot Password?")
+            }
         }
     }
 }

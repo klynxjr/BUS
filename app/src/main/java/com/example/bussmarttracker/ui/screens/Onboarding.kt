@@ -17,10 +17,11 @@ import com.example.bussmarttracker.R
 import com.example.bussmarttracker.ui.theme.primaryColor
 import com.example.bussmarttracker.ui.theme.secondaryColor
 import com.airbnb.lottie.compose.*
-
 @Composable
-fun OnboardingScreen(modifier: Modifier = Modifier) {
-
+fun OnboardingScreen(
+    onFinish: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -29,7 +30,6 @@ fun OnboardingScreen(modifier: Modifier = Modifier) {
             .padding(16.dp)
     ) {
 
-        // Lottie Animation
         LottieAnimationWidget(
             lottiePath = R.raw.bus_login,
             modifier = Modifier
@@ -64,7 +64,7 @@ fun OnboardingScreen(modifier: Modifier = Modifier) {
         Spacer(modifier = Modifier.height(32.dp))
 
         Button(
-            onClick = { /* navigate to login */ },
+            onClick = onFinish,
             colors = ButtonDefaults.buttonColors(
                 containerColor = primaryColor,
                 contentColor = Color.White
@@ -99,9 +99,8 @@ fun LottieAnimationWidget(
         modifier = modifier
     )
 }
-
 @Preview(showBackground = true)
 @Composable
 fun OnboardingPreview() {
-    OnboardingScreen()
+    OnboardingScreen(onFinish = {})
 }
